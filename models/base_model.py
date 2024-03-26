@@ -39,12 +39,19 @@ class BaseModel:
         models.storage.delete(self)
 
     def to_dict(self):
-        """Returns a dictionary containing all keys/values of the instance."""
-        dictionary = self.__dict__.copy()
+        """Convert instance into dict format"""
+        dictionary = {}
+        for key, value in self.__dict__.items():
+            if key == 'created_at' or key == 'updated_at':
+                dictionary[key] = value.isoformat()
+            elif key != '_sa_instance_state':
+                dictionary[key] = value
         dictionary['__class__'] = self.__class__.__name__
-        if 'created_at' in dictionary:
-            dictionary['created_at'] = self.created_at.isoformat()
-        if 'updated_at' in dictionary:
-            dictionary['updated_at'] = self.updated_at.isoformat()
-        dictionary.pop('_sa_instance_state', None)
         return dictionary
+
+    def delete(self):
+        """
+            Delete current instance from storage by calling its delete method
+        """
+        from models import storage
+        storage.delete(self)
