@@ -8,9 +8,6 @@ import models
 from os import getenv
 
 
-#!/usr/bin/python3
-"""This module defines a base class for all models in our hbnb clone"""
-
 time_fmt = "%Y-%m-%dT%H:%M:%S.%f"
 
 if getenv("HBNB_TYPE_STORAGE") == 'db':
