@@ -5,16 +5,22 @@ from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, DateTime, String
 import models
-from os import getenv
 
-Base = declarative_base() if getenv("HBNB_TYPE_STORAGE") == 'db' else object
+
+#!/usr/bin/python3
+"""This module defines a base class for all models in our hbnb clone"""
+
+Base = declarative_base()
+
 
 class BaseModel:
     """A base class for all hbnb models"""
-    if getenv("HBNB_TYPE_STORAGE") == 'db':
-        id = Column(String(60), primary_key=True, nullable=False)
-        created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-        updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    id = Column(String(60), primary_key=True,
+                nullable=False) if models.storage_t == 'db' else ''
+    created_at = Column(DateTime, nullable=False,
+                        default=datetime.utcnow) if models.storage_t == 'db' else datetime.utcnow()
+    updated_at = Column(DateTime, nullable=False,
+                        default=datetime.utcnow) if models.storage_t == 'db' else datetime.utcnow()
 
     def __init__(self, *args, **kwargs):
         """Instantiates a new model"""
@@ -37,15 +43,17 @@ class BaseModel:
         models.storage.new(self)
         models.storage.save()
 
-    def to_dict(self):
-        """Convert instance into dict format"""
-        dictionary = self.__dict__.copy()
-        dictionary['__class__'] = type(self).__name__
-        dictionary['created_at'] = dictionary['created_at'].isoformat()
-        dictionary['updated_at'] = dictionary['updated_at'].isoformat()
-        dictionary.pop("_sa_instance_state", None)
-        return dictionary
-
     def delete(self):
         """Delete instance from storage by calling the delete method"""
         models.storage.delete(self)
+
+    def to_dict(self):
+        """Convert instance into dict format"""
+        dictionary = {}
+        for key, value in self.__dict__.items():
+            if key == 'created_at' or key == 'updated_at':
+                dictionary[key] = value.isoformat()
+            elif key != '_sa_instance_state':
+                dictionary[key] = value
+        dictionary['__class__'] = self.__class__.__name__
+        return dictionary
