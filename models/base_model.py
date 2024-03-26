@@ -7,7 +7,7 @@ from sqlalchemy import Column, DateTime, String
 import models
 from os import getenv
 
-Base = declarative_base() if getenv("HBNB_TYPE_STORAGE") == 'db' else object
+Base = declarative_base()
 
 
 class BaseModel:
@@ -19,11 +19,15 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """Instantiates a new model"""
-        self.id = str(uuid.uuid4())
-        self.created_at = self.updated_at = datetime.utcnow()
-        for key, value in kwargs.items():
-            if key not in ("__class__", "_sa_instance_state"):
-                if key in ("created_at", "updated_at"):
+        if not kwargs:
+            self.id = str(uuid.uuid4())
+            self.created_at = self.updated_at = datetime.utcnow()
+        else:
+            kwargs.setdefault('id', str(uuid.uuid4()))
+            kwargs.setdefault('created_at', datetime.utcnow())
+            kwargs.setdefault('updated_at', datetime.utcnow())
+            for key, value in kwargs.items():
+                if key in ("created_at", "updated_at") and isinstance(value, str):
                     value = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
                 setattr(self, key, value)
 
