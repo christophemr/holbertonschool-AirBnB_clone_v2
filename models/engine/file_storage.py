@@ -27,15 +27,13 @@ class FileStorage:
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
-        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        self.__objects[key] = obj
 
     def save(self):
         """Saves storage dictionary to file"""
-        with open(FileStorage.__file_path, 'w') as f:
-            temp = {}
-            temp.update(FileStorage.__objects)
-            for key, val in temp.items():
-                temp[key] = val.to_dict()
+        temp = {key: obj.to_dict() for key, obj in self.__objects.items()}
+        with open(self.__file_path, 'w') as f:
             json.dump(temp, f)
 
     def delete(self, obj=None):
@@ -45,31 +43,18 @@ class FileStorage:
         """
         if obj is None:
             return
-        # Create the key as it would be stored in __objects
-        obj_key = "{}.{}".format(obj.__class__.__name__, obj.id)
-        # Attempt to delete the object
-        if obj_key in FileStorage.__objects:
-            del FileStorage.__objects[obj_key]
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        if key in self.__objects:
+            del self.__objects[key]
 
     def reload(self):
         """Loads storage dictionary from file"""
-        from models.base_model import BaseModel
-        from models.user import User
-        from models.place import Place
-        from models.state import State
-        from models.city import City
-        from models.amenity import Amenity
-        from models.review import Review
-
-        classes = {
-            'BaseModel': BaseModel, 'User': User, 'Place': Place,
-            'State': State, 'City': City, 'Amenity': Amenity,
-            'Review': Review
-        }
         try:
-            with open(FileStorage.__file_path, 'r') as f:
-                temp = json.load(f)
-                for key, val in temp.items():
-                    self.all()[key] = classes[val['__class__']](**val)
+            with open(self.__file_path, 'r') as f:
+                objects = json.load(f)
+            for obj_id, obj_dict in objects.items():
+                cls_name = obj_dict['__class__']
+                if cls_name in globals():
+                    self.__objects[obj_id] = globals()[cls_name](**obj_dict)
         except FileNotFoundError:
             pass
