@@ -2,27 +2,21 @@
 """This module defines a base class for all models in our hbnb clone"""
 import uuid
 from datetime import datetime
+from sqlalchemy import Column, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, DateTime, String
 import models
 from os import getenv
 
-
-time_fmt = "%Y-%m-%dT%H:%M:%S.%f"
-
-if getenv("HBNB_TYPE_STORAGE") == 'db':
-    Base = declarative_base()
-else:
-    Base = object
+Base = declarative_base()
 
 
-class BaseModel:
+class BaseModel(Base):
     """The BaseModel class from which future classes will be derived"""
-
-    if getenv("HBNB_TYPE_STORAGE") == 'db':
-        id = Column(String(60), nullable=False, primary_key=True)
-        created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-        updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    __abstract__ = True
+    id = Column(String(60), nullable=False, primary_key=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
         """Initialization of the base model"""
@@ -38,16 +32,15 @@ class BaseModel:
             if type(self.updated_at) is str:
                 self.updated_at = datetime.strptime(self.updated_at, time_fmt)
 
-    def __str__(self):
-        """String representation of the BaseModel class"""
-        return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.id,
-                                         self.__dict__)
-
     def save(self):
         """updates the attribute 'updated_at' with the current datetime"""
         self.updated_at = datetime.now()
         models.storage.new(self)
         models.storage.save()
+
+    def delete(self):
+        """delete the current instance from the storage"""
+        models.storage.delete(self)
 
     def to_dict(self):
         """Convert instance into dict format"""
