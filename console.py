@@ -11,6 +11,7 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 import shlex
+import os
 
 
 class HBNBCommand(cmd.Cmd):
@@ -128,23 +129,40 @@ class HBNBCommand(cmd.Cmd):
             return
         list = arg.split(" ")
 
-        new_instance = eval(class_name)()
-
-        for i in range(1, len(list)):
-            key, value = tuple(list[i].split("="))
-            if value.startswith('"'):
-                value.strip('"').replace("_", " ")
-            else:
-                try:
-                    value = eval(value)
-                except Exception:
-                    print(f"** was not able to evaluate {value} **")
-                    pass
-            if hasattr(new_instance, key):
-                setattr(new_instance, key, value)
-        storage.new(new_instance)
-        print(new_instance.id)
-        new_instance.save()
+        if os.getenv('HBNB_TYPE_STORAGE') == 'db':
+            new_instance = eval(class_name)()
+            for i in range(1, len(list)):
+                key, value = tuple(list[i].split("="))
+                if value.startswith('"'):
+                    value.strip('"').replace("_", " ")
+                else:
+                    try:
+                        value = eval(value)
+                    except Exception:
+                        print(f"** was not able to evaluate {value} **")
+                        pass
+                if hasattr(new_instance, key):
+                    setattr(new_instance, key, value)
+            storage.new(new_instance)
+            print(new_instance.id)
+            new_instance.save()
+        else:
+            new_instance = eval(class_name)()
+            for i in range(1, len(list)):
+                key, value = tuple(list[i].split("="))
+                if value.startswith('"'):
+                    value.strip('"').replace("_", " ")
+                else:
+                    try:
+                        value = eval(value)
+                    except Exception:
+                        print(f"** was not able to evaluate {value} **")
+                        pass
+                if hasattr(new_instance, key):
+                    setattr(new_instance, key, value)
+            storage.new(new_instance)
+            print(new_instance.id)
+            new_instance.save()
 
     def help_create(self):
         """ Help information for the create method """
