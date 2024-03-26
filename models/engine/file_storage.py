@@ -11,39 +11,65 @@ from models.review import Review
 
 
 class FileStorage:
+    """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
     __objects = {}
 
     def all(self, cls=None):
-        if cls:
-            cls_name = cls if isinstance(cls, str) else cls.__name__
-            return {k: v for k, v in self.__objects.items() if cls_name in k}
-        return self.__objects
+        """
+        Returns a dictionary of models currently in storage.
+        If cls is provided, returns a dictionary of objects of type cls.
+        """
+        if cls is not None:
+            return {key: obj for key, obj in FileStorage.__objects.items()
+                    if isinstance(obj, cls)}
+        return FileStorage.__objects
 
     def new(self, obj):
-        key = f"{obj.__class__.__name__}.{obj.id}"
-        self.__objects[key] = obj
+        """Adds new object to storage dictionary"""
+        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):
-        obj_dict = {obj_id: obj.to_dict()
-                    for obj_id, obj in self.__objects.items()}
-        with open(self.__file_path, 'w') as f:
-            json.dump(obj_dict, f)
+        """Saves storage dictionary to file"""
+        with open(FileStorage.__file_path, 'w') as f:
+            temp = {}
+            temp.update(FileStorage.__objects)
+            for key, val in temp.items():
+                temp[key] = val.to_dict()
+            json.dump(temp, f)
 
     def delete(self, obj=None):
-        if obj:
-            key = f"{obj.__class__.__name__}.{obj.id}"
-            if key in self.__objects:
-                del self.__objects[key]
-                self.save()
+        """
+        Deletes obj from __objects if it’s inside.
+        If obj is equal to None, the method should not do anything.
+        """
+        if obj is None:
+            return
+        # Create the key as it would be stored in __objects
+        obj_key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        # Attempt to delete the object
+        if obj_key in FileStorage.__objects:
+            del FileStorage.__objects[obj_key]
 
     def reload(self):
+        """Loads storage dictionary from file"""
+        from models.base_model import BaseModel
+        from models.user import User
+        from models.place import Place
+        from models.state import State
+        from models.city import City
+        from models.amenity import Amenity
+        from models.review import Review
+
+        classes = {
+            'BaseModel': BaseModel, 'User': User, 'Place': Place,
+            'State': State, 'City': City, 'Amenity': Amenity,
+            'Review': Review
+        }
         try:
-            with open(self.__file_path, 'r') as f:
-                obj_dict = json.load(f)
-            for obj_id, obj_data in obj_dict.items():
-                cls_name = obj_data['__class__']
-                if cls_name in globals():
-                    self.__objects[obj_id] = globals()[cls_name](**obj_data)
+            with open(FileStorage.__file_path, 'r') as f:
+                temp = json.load(f)
+                for key, val in temp.items():
+                    self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
