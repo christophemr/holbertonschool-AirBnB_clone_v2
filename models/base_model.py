@@ -7,6 +7,9 @@ from sqlalchemy import Column, DateTime, String
 import models
 from os import getenv
 
+Base = declarative_base() if getenv("HBNB_TYPE_STORAGE") == 'db' else object
+
+
 class BaseModel:
     """A base class for all hbnb models"""
     if getenv("HBNB_TYPE_STORAGE") == 'db':
@@ -35,17 +38,15 @@ class BaseModel:
         models.storage.new(self)
         models.storage.save()
 
-    def delete(self):
-        """Delete instance from storage by calling the delete method"""
-        models.storage.delete(self)
-
     def to_dict(self):
         """Convert instance into dict format"""
         dictionary = self.__dict__.copy()
         dictionary['__class__'] = type(self).__name__
-        if 'created_at' in dictionary:
-            dictionary['created_at'] = dictionary['created_at'].isoformat()
-        if 'updated_at' in dictionary:
-            dictionary['updated_at'] = dictionary['updated_at'].isoformat()
+        dictionary['created_at'] = dictionary['created_at'].isoformat()
+        dictionary['updated_at'] = dictionary['updated_at'].isoformat()
         dictionary.pop("_sa_instance_state", None)
         return dictionary
+
+    def delete(self):
+        """Delete instance from storage by calling the delete method"""
+        models.storage.delete(self)
