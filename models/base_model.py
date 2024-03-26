@@ -5,8 +5,12 @@ from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, DateTime, String
 import models
+from os import getenv
 
-Base = declarative_base()
+if getenv("HBNB_TYPE_STORAGE") == 'db':
+    Base = declarative_base()
+else:
+    Base = object
 
 
 class BaseModel:
@@ -55,4 +59,5 @@ class BaseModel:
 
     def delete(self):
         """delete instance from storage ba calling the delete method"""
-        models.storage.delete(self)
+        from models import storage
+        storage.delete(self)
