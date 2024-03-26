@@ -36,6 +36,12 @@ class DBStorage:
         if env == 'test':
             Base.metadata.drop_all(self.__engine)
 
+        # Create a new session
+        self.__session = sessionmaker(bind=self.__engine,
+                                      expire_on_commit=False)
+        Session = scoped_session(self.__session)
+        self.__session = Session()
+
     def all(self, cls=None):
         """Query on the current database session"""
         objects = {}
@@ -69,8 +75,3 @@ class DBStorage:
         """Create all tables in the database"""
         # Create tables based on metadata
         Base.metadata.create_all(self.__engine)
-        # Create a new database session
-        session_factory = sessionmaker(bind=self.__engine,
-                                       expire_on_commit=False)
-        Session = scoped_session(session_factory)
-        self.__session = Session()
