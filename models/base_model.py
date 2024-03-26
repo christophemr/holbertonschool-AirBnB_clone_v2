@@ -52,10 +52,20 @@ class BaseModel:
     def to_dict(self):
         """Convert instance into dict format"""
         dictionary = {}
-        for key, value in self.__dict__.items():
-            if key == 'created_at' or key == 'updated_at':
-                dictionary[key] = value.isoformat()
-            elif key != '_sa_instance_state':
-                dictionary[key] = value
-        dictionary['__class__'] = self.__class__.__name__
+        dictionary.update(self.__dict__)
+        dictionary.update({'__class__':
+                          (str(type(self)).split('.')[-1]).split('\'')[0]})
+        dictionary['created_at'] = self.created_at.isoformat()
+        dictionary['updated_at'] = self.updated_at.isoformat()
+        try:
+            del dictionary["_sa_instance_state"]
+        except KeyError:
+            pass
         return dictionary
+
+    def delete(self):
+        """
+            Delete current instance from storage by calling its delete method
+        """
+        from models import storage
+        storage.delete(self)
