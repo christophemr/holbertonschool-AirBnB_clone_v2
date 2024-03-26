@@ -19,12 +19,8 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """Instantiates a new model"""
-        if not kwargs or "id" not in kwargs:
-            self.id = str(uuid.uuid4())
-        if not kwargs or "created_at" not in kwargs:
-            self.created_at = datetime.utcnow()
-        if not kwargs or "updated_at" not in kwargs:
-            self.updated_at = self.created_at
+        self.id = str(uuid.uuid4())
+        self.created_at = self.updated_at = datetime.utcnow()
         for key, value in kwargs.items():
             if key not in ("__class__", "_sa_instance_state"):
                 if key in ("created_at", "updated_at"):
@@ -33,8 +29,8 @@ class BaseModel:
 
     def __str__(self):
         """Returns a string representation of the instance"""
-        cls_name = type(self).__name__
-        return '[{}] ({}) {}'.format(cls_name, self.id, self.__dict__)
+        cls = (str(type(self)).split('.')[-1]).split('\'')[0]
+        return '[{}] ({}) {}'.format(cls, self.id, self.to_dict())
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
