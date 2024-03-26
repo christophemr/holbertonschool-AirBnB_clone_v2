@@ -9,7 +9,6 @@ from os import getenv
 
 Base = declarative_base() if getenv("HBNB_TYPE_STORAGE") == 'db' else object
 
-
 class BaseModel:
     """A base class for all hbnb models"""
     if getenv("HBNB_TYPE_STORAGE") == 'db':
