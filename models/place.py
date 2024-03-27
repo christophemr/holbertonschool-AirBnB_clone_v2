@@ -9,18 +9,19 @@ from sqlalchemy import Table
 from os import getenv
 import models
 
-relation_table = Table("place_amenity", Base.metadata,
-                       Column("place_id", String(60),
-                              ForeignKey("places.id"),
-                              primary_key=True, nullable=False),
-                       Column("amenity_id", String(60),
-                              ForeignKey("amenities.id"),
-                              primary_key=True, nullable=False))
-
+if getenv('HBNB_TYPE_STORAGE') == 'db':
+    relation_table = Table(
+        'place_amenity', Base.metadata,
+        Column('place_id', String(60), ForeignKey(
+            'places.id'), primary_key=True, nullable=False),
+        Column('amenity_id', String(60), ForeignKey(
+            'amenities.id'), primary_key=True, nullable=False)
+    )
 
 class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = 'places'
+    id = Column(String(60), primary_key=True)
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
@@ -37,15 +38,12 @@ class Place(BaseModel, Base):
                              viewonly=False)
     amenity_ids = []
 
-    if getenv("HBNB_TYPE_STORAGE", None) != "db":
-        @property
-        def reviews(self):
-            """Get a list of all linked Reviews"""
-            review_list = []
-            for review in list(models.storage.all(Review).values()):
-                if review.place_id == self.id:
-                    review_list.append(review)
-            return review_list
+    @property
+    def reviews(self):
+        """Getter for file storage to simulate DB relationship."""
+        if getenv('HBNB_TYPE_STORAGE') != 'db':
+            return [review for review in models.storage.all(Review).values() if review.place_id == self.id]
+        return self._reviews
 
         @property
         def amenities(self):
