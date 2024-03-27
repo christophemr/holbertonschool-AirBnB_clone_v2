@@ -7,9 +7,8 @@
 """
 from os import getenv
 
-data_storage_type = getenv("HBNB_TYPE_STORAGE")
 
-if data_storage_type == "db":
+if getenv("HBNB_TYPE_STORAGE") == 'db':
     from models.engine.db_storage import DBStorage
     storage = DBStorage()
 else:
