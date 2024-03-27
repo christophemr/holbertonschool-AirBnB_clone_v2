@@ -3,6 +3,7 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
+from models.review import Review
 
 
 class Place(BaseModel, Base):
@@ -18,3 +19,12 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, default=0, nullable=False)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    reviews = relationship("Review", backref="place",
+                           cascade="all, delete")
+    @property
+    def reviews(self):
+        """FileStorage relationship between Place and Review."""
+        from models import storage
+        all_reviews = storage.all(Review)
+        place_reviews = [review for review in all_reviews.values() if review.place_id == self.id]
+        return place_reviews
