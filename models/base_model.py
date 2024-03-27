@@ -7,12 +7,17 @@ from sqlalchemy import Column, DateTime, String
 import models
 from os import getenv
 
-Base = declarative_base() if getenv("HBNB_TYPE_STORAGE") == 'db' else object
+time_format = "%Y-%m-%dT%H:%M:%S.%f"
+
+if models.data_storage_type == "db":
+    Base = declarative_base()
+else:
+    Base = object
 
 
 class BaseModel:
     """A base class for all hbnb models"""
-    if getenv("HBNB_TYPE_STORAGE") == 'db':
+    if models.data_storage_type == 'db':
         id = Column(String(60), primary_key=True, nullable=False)
         created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
         updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -20,12 +25,19 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         """Instantiates a new model"""
         self.id = str(uuid.uuid4())
-        self.created_at = self.updated_at = datetime.utcnow()
+        self.created_at = datetime.utcnow()
+        self.updated_at = self.created_at
         for key, value in kwargs.items():
-            if key not in ("__class__", "_sa_instance_state"):
-                if key in ("created_at", "updated_at"):
-                    value = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
+            if key == '__class__':
+                continue
+            if not hasattr(self, key):  # Check if attribute already exists
                 setattr(self, key, value)
+
+        # Conversion of created_at and updated_at if they are strings
+        if isinstance(self.created_at, str):
+            self.created_at = datetime.strptime(self.created_at, time_format)
+        if isinstance(self.updated_at, str):
+            self.updated_at = datetime.strptime(self.updated_at, time_format)
 
     def __str__(self):
         """Returns a string representation of the instance"""
@@ -44,7 +56,8 @@ class BaseModel:
         dictionary['__class__'] = type(self).__name__
         dictionary['created_at'] = dictionary['created_at'].isoformat()
         dictionary['updated_at'] = dictionary['updated_at'].isoformat()
-        dictionary.pop("_sa_instance_state", None)
+        if '_sa_instance_state' in dictionary:
+            del dictionary['_sa_instance_state']
         return dictionary
 
     def delete(self):
