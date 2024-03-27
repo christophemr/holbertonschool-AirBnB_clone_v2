@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """DB Storage Engine Module"""
-from os import getenv
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -26,11 +26,11 @@ class DBStorage:
     def __init__(self):
         """Initialize DBStorage"""
         # Get MySQL configuration from environment variables
-        HBNB_MYSQL_USER = getenv("HBNB_MYSQL_USER")
-        HBNB_MYSQL_PWD = getenv("HBNB_MYSQL_PWD")
-        HBNB_MYSQL_HOST = getenv("HBNB_MYSQL_HOST")
-        HBNB_MYSQL_DB = getenv("HBNB_MYSQL_DB")
-        HBNB_ENV = getenv("HBNB_ENV")
+        HBNB_MYSQL_USER = os.getenv("HBNB_MYSQL_USER")
+        HBNB_MYSQL_PWD = os.getenv("HBNB_MYSQL_PWD")
+        HBNB_MYSQL_HOST = os.getenv("HBNB_MYSQL_HOST")
+        HBNB_MYSQL_DB = os.getenv("HBNB_MYSQL_DB")
+        HBNB_ENV = os.getenv("HBNB_ENV")
 
         # Create the database engine
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
