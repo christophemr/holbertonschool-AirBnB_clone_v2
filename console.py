@@ -12,6 +12,7 @@ from models.amenity import Amenity
 from models.review import Review
 import shlex
 import os
+from os import getenv
 
 
 class HBNBCommand(cmd.Cmd):
