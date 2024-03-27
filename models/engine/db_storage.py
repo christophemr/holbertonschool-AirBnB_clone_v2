@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """DB Storage Engine Module"""
-import os
+from os import getenv
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, scoped_session
