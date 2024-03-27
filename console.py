@@ -3,16 +3,13 @@
 import cmd
 import sys
 from models.base_model import BaseModel
-from models import storage
+from models.__init__ import storage
 from models.user import User
 from models.place import Place
 from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-import shlex
-import os
-from os import getenv
 
 
 class HBNBCommand(cmd.Cmd):
@@ -76,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] == '}'\
+                    if pline[0] is '{' and pline[-1] is '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -116,53 +113,55 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, arg):
-        """Creates a new object of any class"""
-        try:
-            class_name = arg.split(" ")[0]
-        except IndexError:
-            pass
-        if not class_name:
+    def do_create(self, args):
+        """ Create an object of any class"""
+        if not args:
             print("** class name missing **")
             return
-        elif class_name not in HBNBCommand.classes:
+
+        # Extract class name and parameters
+        args_list = args.split()
+        class_name = args_list[0]
+        params = args_list[1:]
+
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        list = arg.split(" ")
 
-        new_instance = eval(class_name)()
-        for i in range(1, len(list)):
-            key, value = tuple(list[i].split("="))
-            if value.startswith('"'):
-                value.strip('"').replace("_", " ")
+        # Parse parameters and create object
+        parsed_params = {}
+        for param in params:
+            # Split parameter into key and value
+            key_value = param.split('=')
+            if len(key_value) != 2:
+                print(f"Invalid parameter format: {param}")
+                continue
+
+            key, value = key_value
+            # Check if value is enclosed in double quotes
+            if value.startswith('"') and value.endswith('"'):
+                # Remove surrounding double quotes
+                value = value[1:-1]
+                # Replace escaped double quotes with actual double quotes
+                value = value.replace('\\"', '"')
+                # Replace underscores with spaces
+                value = value.replace('_', ' ')
+                parsed_params[key] = value
+            elif '.' in value:  # Check for float value
+                try:
+                    parsed_params[key] = float(value)
+                except ValueError:
+                    print(f"Invalid float value: {value}")
             else:
                 try:
-                    value = eval(value)
-                except Exception:
-                    print(f"** was not able to evaluate {value} **")
-                    pass
-            if hasattr(new_instance, key):
-                setattr(new_instance, key, value)
-            storage.new(new_instance)
-            print(new_instance.id)
-            new_instance.save()
-        else:
-            new_instance = eval(class_name)()
-            for i in range(1, len(list)):
-                key, value = tuple(list[i].split("="))
-                if value.startswith('"'):
-                    value.strip('"').replace("_", " ")
-                else:
-                    try:
-                        value = eval(value)
-                    except Exception:
-                        print(f"** was not able to evaluate {value} **")
-                        pass
-                if hasattr(new_instance, key):
-                    setattr(new_instance, key, value)
-            storage.new(new_instance)
-            print(new_instance.id)
-            new_instance.save()
+                    parsed_params[key] = int(value)  # Check for integer value
+                except ValueError:
+                    parsed_params[key] = value  # Treat as string if not an int
+
+        # Create an instance of the class with the parsed parameters
+        new_instance = HBNBCommand.classes[class_name](**parsed_params)
+        storage.save()
+        print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
@@ -310,7 +309,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] == '\"':  # check for quoted arg
+            if args and args[0] is '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -318,10 +317,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] != ' ':
+            if not att_name and args[0] is not ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] == '\"':
+            if args[2] and args[2][0] is '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
