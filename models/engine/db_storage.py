@@ -39,7 +39,6 @@ class DBStorage:
 
     def all(self, cls=None):
         """ Query all objects by class name, or all if cls=None"""
-
         # Define a class map similar to the first snippet
         class_map = {
             "User": User,
