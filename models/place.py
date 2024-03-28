@@ -32,26 +32,33 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, default=0, nullable=False)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
-    amenity_ids = []
-
     # Relationships
-    reviews = relationship("Review", backref="place", cascade="all, delete")
+    reviews = relationship("Review", backref="place", cascade="delete")
     amenities = relationship(
         "Amenity", secondary=place_amenity, viewonly=False)
+    amenity_ids = []
 
-    if getenv('HBNB_TYPE_STORAGE') != 'db':
+    if getenv("HBNB_TYPE_STORAGE", None) != 'db':
         @property
-        def reviews_fs(self):
+        def reviews(self):
             """File storage relationship simulation for reviews."""
-            return [review for review in models.storage.all(Review).values() if review.place_id == self.id]
+            review_list = []
+            for review in list(all(Review).values()):
+                if review.place_id == self.id:
+                    review_list.append(review)
+            return review_list
 
         @property
-        def amenities_fs(self):
+        def amenities(self):
             """File storage getter for amenities."""
-            return [amenity for amenity in models.storage.all(Amenity).values() if amenity.id in self.amenity_ids]
+            amenities = []
+            for amenity in list(all(Amenity).values()):
+                if amenity.id in self.amenity_ids:
+                    amenities.append(amenity)
+            return amenities
 
-        @amenities_fs.setter
-        def amenities_fs(self, obj):
+        @amenities.setter
+        def amenities(self, value):
             """File storage setter for amenities."""
-            if type(obj).__name__ == 'Amenity':
-                self.amenity_ids.append(obj.id)
+            if type(value).__name__ == 'Amenity':
+                self.amenity_ids.append(value.id)
