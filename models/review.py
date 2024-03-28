@@ -4,6 +4,7 @@ from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 from models.base_model import Base, BaseModel
 
+
 class Review(BaseModel, Base):
     __tablename__ = 'reviews'
     id = Column(String(60), primary_key=True)

@@ -45,7 +45,8 @@ class BaseModel:
 
     def to_dict(self):
         """
-        Returns a dictionary containing all key/values of __dict__ of the instance.
+        Returns a dictionary containing all key/values of __dict__
+        of the instance.
         This includes the class name, and the created_at and updated_at times
         formatted as strings. It also handles removing any SQLAlchemy specific
         attributes.
