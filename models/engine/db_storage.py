@@ -14,9 +14,6 @@ from models.review import Review
 import models
 import sqlalchemy
 
-classes = {'User': User, 'State': State, 'City': City,
-           'Amenity': Amenity, 'Place': Place, 'Review': Review}
-
 
 class DBStorage:
     """DB Storage Engine Class"""
@@ -56,20 +53,18 @@ class DBStorage:
             "Review": Review
         }
 
-        # Query objects dictionary
-        objects = {}
-
-        # Iterate over the classes in the class_map
-        for class_name, class_obj in class_map.items():
-            if cls is None or cls == class_obj or cls == class_name:
-                # Query objects from the session for the current class
-                objs = self.__session.query(class_obj).all()
-                # Populate the objects dictionary
-                for obj in objs:
-                    key = obj.__class__.__name__ + '.' + obj.id
-                    objects[key] = obj
-
-        return objects
+        list_objects = {}
+        if cls:
+            if isinstance(cls, str):
+                cls = class_map.get(cls, None)
+                if cls is None:
+                    print("** class doesn't exist **")
+                    return list_objects
+            self.query_session(cls, list_objects)
+        else:
+            for cls_obj in class_map.values():
+                self.query_session(cls_obj, list_objects)
+        return list_objects
 
     def new(self, obj):
         """Add the object to the current database session"""
