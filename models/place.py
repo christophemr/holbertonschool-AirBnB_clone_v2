@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 from models.review import Review
 from models.amenity import Amenity
 from os import getenv
-import models
 
 # Association table for the many-to-many relationship between Place and Amenity
 place_amenity = Table(
@@ -20,16 +19,15 @@ place_amenity = Table(
 
 class Place(BaseModel, Base):
     """A place to stay"""
-    id = Column(String(60), primary_key=True)
     __tablename__ = 'places'
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
     user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
     description = Column(String(1024), nullable=True)
-    number_rooms = Column(Integer, default=0, nullable=False)
-    number_bathrooms = Column(Integer, default=0, nullable=False)
-    max_guest = Column(Integer, default=0, nullable=False)
-    price_by_night = Column(Integer, default=0, nullable=False)
+    number_rooms = Column(Integer, nullable=False, default=0,)
+    number_bathrooms = Column(Integer, nullable=False, default=0)
+    max_guest = Column(Integer, nullable=False, default=0)
+    price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     # Relationships
@@ -60,5 +58,5 @@ class Place(BaseModel, Base):
         @amenities.setter
         def amenities(self, value):
             """File storage setter for amenities."""
-            if type(value).__name__ == 'Amenity':
+            if isinstance(value, Amenity):
                 self.amenity_ids.append(value.id)
