@@ -15,21 +15,21 @@ Base = declarative_base()
 class BaseModel:
     """The BaseModel class from which future classes will be derived"""
 
-    if getenv("HBNB_TYPE_STORAGE") == 'db':
-        id = Column(String(60), nullable=False, primary_key=True)
-        created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-        updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    id = Column(String(60), nullable=False, primary_key=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     def __init__(self, **kwargs):
         """Initialization of the base model"""
         self.id = str(uuid.uuid4())
-        self.created_at = self.updated_at = datetime.now()
-
-        for key, value in kwargs.items():
-            if key in ["created_at", "updated_at"]:
-                # Convert string timestamps to datetime objects
-                value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-            if key != "__class__":
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
+        if kwargs:
+            kwargs.pop('__class__', None)
+            for key, value in kwargs.items():
+                if key in ['created_at', 'updated_at'] and isinstance(
+                        value, str):
+                    value = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
                 setattr(self, key, value)
 
     def __str__(self):
@@ -50,21 +50,17 @@ class BaseModel:
         formatted as strings. It also handles removing any SQLAlchemy specific
         attributes.
         """
-        dict_repr = self.__dict__.copy()
-        dict_repr["__class__"] = self.__class__.__name__
-        dict_repr["created_at"] = self.created_at.isoformat()
-        dict_repr["updated_at"] = self.updated_at.isoformat()
+        dictionary = {}
+        dictionary.update(self.__dict__)
+        dictionary.update({'__class__':
+                          (str(type(self)).split('.')[-1]).split('\'')[0]})
+        dictionary['created_at'] = self.created_at.isoformat()
+        dictionary['updated_at'] = self.updated_at.isoformat()
+        if "_sa_instance_state" in dictionary.keys():
+            dictionary.pop('_sa_instance_state')
+        return dictionary
 
-        # Exclude SQLAlchemy's instance state attribute, if present
-        dict_repr.pop("_sa_instance_state", None)
-
-        return dict_repr
-
-    @classmethod
-    def prepare(cls, engine):
-        """
-        Prepares the class for use with SQLAlchemy, if database storage is used.
-        This method is only relevant when transitioning from file to DB storage.
-        """
-        if getenv("HBNB_TYPE_STORAGE") != 'db':
-            cls.__table__.create(bind=engine, checkfirst=True)
+    def delete(self):
+        """delete the current instance from the storage"""
+        from models import storage
+        storage.delete(self)
