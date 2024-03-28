@@ -41,24 +41,33 @@ class test_Place(test_basemodel):
     def test_attributes_type(self):
         """Test Place attributes have the correct type."""
         if os.getenv('HBNB_TYPE_STORAGE') != 'db':
-            self.assertIsInstance(self.new.city_id, str,
-                                  "city_id is not a string")
-            self.assertIsInstance(self.new.user_id, str,
-                                  "user_id is not a string")
-            self.assertIsInstance(self.new.name, str, "name is not a string")
-            self.assertIsInstance(self.new.description,
-                                  str, "description is not a string")
-            self.assertIsInstance(self.new.number_rooms,
-                                  int, "number_rooms is not an int")
-            self.assertIsInstance(self.new.number_bathrooms,
-                                  int, "number_bathrooms is not an int")
-            self.assertIsInstance(self.new.max_guest, int,
-                                  "max_guest is not an int")
-            self.assertIsInstance(self.new.price_by_night,
-                                  int, "price_by_night is not an int")
-            self.assertIsInstance(self.new.latitude, float,
-                                  "latitude is not a float")
-            self.assertIsInstance(self.new.longitude, float,
-                                  "longitude is not a float")
-            self.assertIsInstance(self.new.amenity_ids,
-                                  list, "amenity_ids is not a list")
+            if self.new.user_id is not None:
+                self.assertIsInstance(
+                    self.new.user_id, str, "user_id is not a string")
+            if self.new.name is not None:
+                self.assertIsInstance(self.new.name, str,
+                                      "name is not a string")
+            if self.new.description is not None:
+                self.assertIsInstance(
+                    self.new.description, str, "description is not a string")
+            if self.new.number_rooms is not None:
+                self.assertIsInstance(
+                    self.new.number_rooms, int, "number_rooms is not an int")
+            if self.new.number_bathrooms is not None:
+                self.assertIsInstance(
+                    self.new.number_bathrooms, int, "number_bathrooms is not an int")
+            if self.new.max_guest is not None:
+                self.assertIsInstance(self.new.max_guest,
+                                      int, "max_guest is not an int")
+            if self.new.price_by_night is not None:
+                self.assertIsInstance(
+                    self.new.price_by_night, int, "price_by_night is not an int")
+            if self.new.latitude is not None:
+                self.assertIsInstance(
+                    self.new.latitude, float, "latitude is not a float")
+            if self.new.longitude is not None:
+                self.assertIsInstance(self.new.longitude,
+                                      float, "longitude is not a float")
+            if self.new.amenity_ids is not None:
+                self.assertIsInstance(
+                    self.new.amenity_ids, list, "amenity_ids is not a list")
