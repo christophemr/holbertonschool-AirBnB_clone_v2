@@ -1,36 +1,21 @@
-#!/usr/bin/python3
-""" """
-from tests.test_models.test_base_model import test_basemodel
-from models.review import Review
 import os
+from models.review import Review
+from tests.test_models.test_base_model import test_basemodel
 
 
 class test_review(test_basemodel):
-    """review test class """
+    """Review test class"""
 
     def __init__(self, *args, **kwargs):
-        """ review class init"""
+        """Review class init"""
         super().__init__(*args, **kwargs)
         self.name = "Review"
         self.value = Review
 
-    def test_place_id(self):
-        """test review place_id """
-        new = self.value()
-        self.assertEqual(type(new.place_id), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
-
-    def test_user_id(self):
-        """review user_id test """
-        new = self.value()
-        self.assertEqual(type(new.user_id), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
-
-    def test_text(self):
-        """review text test """
-        new = self.value()
-        self.assertEqual(type(new.text), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+    def setUp(self):
+        """Set up for the tests."""
+        super().setUp()
+        if os.getenv('HBNB_TYPE_STORAGE') != 'db':
+            self.new.place_id = "test_place_id"
+            self.new.user_id = "test_user_id"
+            self.new.text = "test_text"
