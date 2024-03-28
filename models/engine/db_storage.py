@@ -44,15 +44,32 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Query on the current database session"""
+        """ Query all objects by class name, or all if cls=None"""
+
+        # Define a class map similar to the first snippet
+        class_map = {
+            "User": User,
+            "Place": Place,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Review": Review
+        }
+
+        # Query objects dictionary
         objects = {}
-        for clss in classes:
-            if cls is None or cls == classes[clss] or cls == clss:
-                objs = self.__session.query(classes[clss]).all()
+
+        # Iterate over the classes in the class_map
+        for class_name, class_obj in class_map.items():
+            if cls is None or cls == class_obj or cls == class_name:
+                # Query objects from the session for the current class
+                objs = self.__session.query(class_obj).all()
+                # Populate the objects dictionary
                 for obj in objs:
                     key = obj.__class__.__name__ + '.' + obj.id
                     objects[key] = obj
-        return (objects)
+
+        return objects
 
     def new(self, obj):
         """Add the object to the current database session"""
@@ -72,4 +89,4 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sess_factory)
-        self.__session = Session
+        self.__session = Session()
