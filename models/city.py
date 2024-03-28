@@ -5,14 +5,15 @@ from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 import os
 
-storage_type = os.getenv("HBNB_TYPE_STORAGE")
+data_storage_type = os.getenv("HBNB_TYPE_STORAGE")
 
 
 class City(BaseModel, Base):
-    """ The city class, contains state ID and name """
+    """The City class"""
     __tablename__ = 'cities'
+    id = Column(String(60), primary_key=True)
     state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
     name = Column(String(128), nullable=False)
-    if storage_type == 'db':
+    if data_storage_type == 'db':
         state = relationship("State", back_populates="cities")
-        places = relationship("Place", backref="cities", cascade="delete")
+    places = relationship("Place", backref="cities", cascade="delete")
