@@ -7,6 +7,8 @@ from uuid import UUID
 import json
 import os
 import time
+from unittest.mock import patch
+from datetime import datetime, timedelta
 
 
 class test_basemodel(unittest.TestCase):
@@ -99,7 +101,12 @@ class test_basemodel(unittest.TestCase):
     def test_updated_at(self):
         """updated at test """
         new = self.value()
-        original_updated_at = new.updated_at
-        time.sleep(1)
-        new.save()
-        self.assertNotEqual(original_updated_at, new.updated_at, "updated_at wasn't updated")
+        with patch('models.base_model.datetime') as mock_datetime:
+            now = datetime.now()
+            mock_datetime.now.return_value = now
+            new.save()
+            future = now + timedelta(seconds=1)
+            mock_datetime.now.return_value = future
+            new.save()
+            self.assertNotEqual(new.created_at, new.updated_at)
+            self.assertEqual(new.updated_at, future)
