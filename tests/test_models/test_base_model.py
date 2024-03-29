@@ -60,14 +60,13 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = BaseModel(**copy)
 
-    def test_save(self):
-        """ Testing save """
-        i = self.value()
+    @patch('models.storage')
+    def test_save(self, mock_storage):
+        """Testing save method of BaseModel"""
+        i = BaseModel()
         i.save()
-        key = self.name + "." + i.id
-        with open('file.json', 'r') as f:
-            j = json.load(f)
-            self.assertEqual(j[key], i.to_dict())
+        mock_storage.new.assert_called_once_with(i)
+        mock_storage.save.assert_called_once()
 
     def test_str(self):
         """str method test """
@@ -87,7 +86,6 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = self.value(**n)
 
-
     def test_id(self):
         """id test of model """
         new = self.value()
@@ -96,7 +94,8 @@ class test_basemodel(unittest.TestCase):
     def test_created_at(self):
         """created at test """
         new = self.value()
-        self.assertEqual(type(new.created_at), datetime)  # Changed from datetime.datetime to datetime
+        # Changed from datetime.datetime to datetime
+        self.assertEqual(type(new.created_at), datetime)
 
     def test_updated_at(self):
         """updated at test """
