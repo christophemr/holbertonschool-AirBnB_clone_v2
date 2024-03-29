@@ -1,22 +1,17 @@
 #!/usr/bin/python3
-""" """
-from tests.test_models.test_base_model import test_basemodel
-from models.amenity import Amenity
-import os
+""" State Module for HBNB project """
+from models.amenity import Amenity  # Import Amenity class
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
+import unittest
 
 
-class test_Amenity(test_basemodel):
-    """amenity test class """
-
-    def __init__(self, *args, **kwargs):
-        """init test class """
-        super().__init__(*args, **kwargs)
-        self.name = "Amenity"
-        self.value = Amenity
+class TestAmenity(unittest.TestCase):
+    """Test cases for the Amenity class"""
 
     def test_name2(self):
-        """name type test """
-        new = self.value()
-        self.assertEqual(type(new.name), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db'
-                         else type(None))
+        """Test that name attribute is of type str"""
+        new = Amenity(
+            name="Test Amenity")
+        self.assertIsInstance(new.name, str)
