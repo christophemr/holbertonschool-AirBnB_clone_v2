@@ -19,12 +19,14 @@ class test_fileStorage(unittest.TestCase):
             del_list.append(key)
         for key in del_list:
             del storage._FileStorage__objects[key]
+        storage.reload()
+        storage.__objects = {}
 
     def tearDown(self):
         """ Remove storage file at end of tests """
         try:
             os.remove('file.json')
-        except:
+        except FileNotFoundError:
             pass
 
     def test_obj_list_empty(self):
