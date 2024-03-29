@@ -8,9 +8,7 @@ import os
 class test_state(test_basemodel):
     """test state class """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name):
         """ test state class init"""
-        super().__init__(*args, **kwargs)
-        self.name = "State"
-        self.value = State
-
+        self.id = id(self)
+        self.name = name
