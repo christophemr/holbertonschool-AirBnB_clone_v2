@@ -6,49 +6,38 @@ import os
 
 
 class test_User(test_basemodel):
-    """Test user class"""
+    """test user class """
 
     def __init__(self, *args, **kwargs):
-        """Test user class init"""
+        """test user class init """
         super().__init__(*args, **kwargs)
         self.name = "User"
         self.value = User
 
-    def setUp(self):
-        """Set up for each test method."""
-        super().setUp()
-        self.user = self.value()
-        # Set default attributes for the user, ensuring they are not None if not using 'db' storage
-        if os.getenv('HBNB_TYPE_STORAGE') != 'db':
-            self.user.email = "user@example.com"
-            self.user.first_name = "Test"
-            self.user.last_name = "User"
-            self.user.password = "password"
-
     def test_first_name(self):
-        """User first name test."""
-        expected_type = str if os.getenv(
-            'HBNB_TYPE_STORAGE') != 'db' else type(None)
-        self.assertEqual(type(self.user.first_name),
-                         expected_type, "First name type mismatch")
+        """user first name test """
+        new = self.value()
+        self.assertEqual(type(new.first_name), str if
+                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
+                         type(None))
 
     def test_last_name(self):
-        """User last name test."""
-        expected_type = str if os.getenv(
-            'HBNB_TYPE_STORAGE') != 'db' else type(None)
-        self.assertEqual(type(self.user.last_name),
-                         expected_type, "Last name type mismatch")
+        """user last name test """
+        new = self.value()
+        self.assertEqual(type(new.last_name), str if
+                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
+                         type(None))
 
     def test_email(self):
-        """User email test."""
-        expected_type = str if os.getenv(
-            'HBNB_TYPE_STORAGE') != 'db' else type(None)
-        self.assertEqual(type(self.user.email),
-                         expected_type, "Email type mismatch")
+        """user email test """
+        new = self.value()
+        self.assertEqual(type(new.email), str if
+                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
+                         type(None))
 
     def test_password(self):
-        """User password test."""
-        expected_type = str if os.getenv(
-            'HBNB_TYPE_STORAGE') != 'db' else type(None)
-        self.assertEqual(type(self.user.password),
-                         expected_type, "Password type mismatch")
+        """user psswd test"""
+        new = self.value()
+        self.assertEqual(type(new.password), str if
+                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
+                         type(None))
