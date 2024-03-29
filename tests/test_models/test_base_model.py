@@ -97,15 +97,27 @@ class test_basemodel(unittest.TestCase):
         # Changed from datetime.datetime to datetime
         self.assertEqual(type(new.created_at), datetime)
 
-    def test_updated_at(self):
+    @patch('models.storage')
+    def test_updated_at(self, mock_storage):
         """updated at test """
-        new = self.value()
+        # Create a new instance of BaseModel
+        new = BaseModel()
+
+        # Set up mock for datetime
         with patch('models.base_model.datetime') as mock_datetime:
             now = datetime.now()
             mock_datetime.now.return_value = now
+
+            # Save the new instance
             new.save()
+
+            # Set future time for updating
             future = now + timedelta(seconds=1)
             mock_datetime.now.return_value = future
+
+            # Save again to trigger updating
             new.save()
+
+            # Assert that updated_at is equal to future time
             self.assertNotEqual(new.created_at, new.updated_at)
             self.assertEqual(new.updated_at, future)
