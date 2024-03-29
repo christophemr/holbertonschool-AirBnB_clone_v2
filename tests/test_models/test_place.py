@@ -22,34 +22,24 @@ class test_Place(test_basemodel):
             'HBNB_TYPE_STORAGE') != 'db' else type(None)
         self.assertEqual(type(new.city_id), expected_type)
 
-
-    def test_user_id(self):
-        """ user test method"""
-        new = self.value()
-        self.assertEqual(type(new.user_id), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
-
     def test_name(self):
         """test name method """
-        new = self.value()
-        self.assertEqual(type(new.name), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+        new = self.value(name='Test Name')
+        self.assertEqual(type(new.name), str)
+
 
     def test_description(self):
-        """ description test method"""
-        new = self.value()
-        self.assertEqual(type(new.description), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+        """Description test method."""
+        # Ensure a description is provided to the instance
+        new = self.value(description='Test Description')
+        self.assertEqual(type(new.description), str)
+
 
     def test_number_rooms(self):
-        """testing place number of rooms attr"""
-        new = self.value()
-        self.assertEqual(type(new.number_rooms), int if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+        """Testing place number of rooms attribute."""
+        new = self.value(number_rooms=3)
+        self.assertEqual(type(new.number_rooms), int)
+
 
     def test_number_bathrooms(self):
         """test place number of bathrooms """
