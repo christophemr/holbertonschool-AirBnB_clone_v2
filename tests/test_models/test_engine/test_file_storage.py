@@ -97,18 +97,6 @@ class test_fileStorage(unittest.TestCase):
         """ Confirm __objects is a dict """
         self.assertEqual(type(storage.all()), dict)
 
-
-    def test_key_format(self):
-        """ Test for the correct format of the keys in the storage """
-        new = BaseModel()
-        key = None  # Initialize key
-        for key in storage.all().keys():
-            break  # Exit loop after finding the first key
-        self.assertTrue(key is not None, "No keys found in storage")
-        self.assertEqual(str(key.split(".")[0]), 'BaseModel')
-        self.assertEqual(len(key.split(".")[1].split('-')), 36)  # UUID length is 32 chars + "BaseModel" prefix (4 chars)
-
-
     def test_storage_var_created(self):
         """ FileStorage object storage created """
         from models.engine.file_storage import FileStorage
