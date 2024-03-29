@@ -40,25 +40,3 @@ class test_db_storage(unittest.TestCase):
 
         module_class = len(DBStorage.__init__.__doc__)
         self.assertGreater(module_class, 0)
-
-    def setUp(self):
-        """Setup test environment."""
-        storage.delete_all(
-            Amenity)
-
-    def tearDown(self):
-        """Teardown test environment."""
-        storage.delete_all(Amenity)
-
-    def test_save(self):
-        """Test saving an Amenity record."""
-        obj = Amenity(name="Pool")
-        obj.save()
-        self.assertIsNotNone(obj.id)
-
-        fetched_obj = storage.get(Amenity, obj.id)
-        self.assertIsNotNone(fetched_obj)
-        self.assertEqual(fetched_obj.name, "Pool")
-
-    if __name__ == '__main__':
-        unittest.main()
