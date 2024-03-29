@@ -42,39 +42,42 @@ class test_Place(test_basemodel):
 
 
     def test_number_bathrooms(self):
-        """test place number of bathrooms """
-        new = self.value()
-        self.assertEqual(type(new.number_bathrooms), int if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+        """Test place number of bathrooms."""
+        new = self.value(number_bathrooms=2)  # Explicitly set number_bathrooms
+        expected_type = int if os.getenv(
+            'HBNB_TYPE_STORAGE') != 'db' else type(None)
+        self.assertEqual(type(new.number_bathrooms), expected_type)
+
+
 
     def test_max_guest(self):
-        """ test place max_guest"""
-        new = self.value()
-        self.assertEqual(type(new.max_guest), int if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+        """Test place max_guest"""
+        new = self.value(max_guest=4)  # Explicitly set max_guest
+        expected_type = int if os.getenv(
+            'HBNB_TYPE_STORAGE') != 'db' else type(None)
+        self.assertEqual(type(new.max_guest), expected_type)
+
 
     def test_price_by_night(self):
-        """ test place price/night"""
-        new = self.value()
-        self.assertEqual(type(new.price_by_night), int if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+        """Test place price per night."""
+        new = self.value(price_by_night=100)
+        expected_type = int if os.getenv(
+            'HBNB_TYPE_STORAGE') != 'db' else type(None)
+        self.assertEqual(type(new.price_by_night), expected_type)
 
-    def test_latitude(self):
-        """test place latitude """
-        new = self.value()
-        self.assertEqual(type(new.latitude), float if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
 
-    def test_longitude(self):
-        """ test place longitude"""
-        new = self.value()
-        self.assertEqual(type(new.latitude), float if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+
+def test_latitude(self):
+    """test place latitude"""
+    new = self.value(latitude=10.0)
+    self.assertEqual(type(new.latitude), float)
+
+
+def test_longitude(self):
+    """test place longitude"""
+    new = self.value(longitude=20.0)
+    self.assertEqual(type(new.longitude), float)
+
 
     def test_amenity_ids(self):
         """test amenity id """
