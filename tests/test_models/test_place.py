@@ -16,10 +16,12 @@ class test_Place(test_basemodel):
 
     def test_city_id(self):
         """init test method """
-        new = self.value()
-        self.assertEqual(type(new.city_id), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+        new = self.value(city_id='1234-5678', user_id='abcd-efgh', name='Test Place', description='A place for testing',
+                         number_rooms=3, number_bathrooms=2, max_guest=4, price_by_night=100, latitude=0.0, longitude=0.0)
+        expected_type = str if os.getenv(
+            'HBNB_TYPE_STORAGE') != 'db' else type(None)
+        self.assertEqual(type(new.city_id), expected_type)
+
 
     def test_user_id(self):
         """ user test method"""
