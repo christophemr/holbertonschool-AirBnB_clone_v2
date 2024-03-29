@@ -1,22 +1,16 @@
-#!/usr/bin/python3
-""" """
-from tests.test_models.test_base_model import test_basemodel
+from unittest import TestCase
 from models.state import State
 import os
 
 
-class test_state(test_basemodel):
-    """test state class """
-
-    def __init__(self, *args, **kwargs):
-        """ test state class init"""
-        super().__init__(*args, **kwargs)
-        self.name = "State"
-        self.value = State
+class test_state(TestCase):
+    """Test the State class"""
 
     def test_name3(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.name), str if
-                         os.getenv('HBNB_TYPE_STORAGE') != 'db' else
-                         type(None))
+        """Test that the 'name' attribute of a State instance is correctly typed."""
+        new = State()
+        expected_type = str if os.getenv(
+            'HBNB_TYPE_STORAGE') != 'db' else type(None)
+        new.name = "Test State"
+        self.assertIsInstance(new.name, expected_type, f"The 'name' attribute is expected to be of type {
+                              expected_type}, but got {type(new.name)}")
