@@ -3,17 +3,17 @@
 from flask import Flask, render_template
 from models import storage
 from models.state import State
+from models import *
 
 
 app = Flask(__name__)
 
 
-@app.route("/states_list", strict_slashes=False)
+@app.route('/states_list', strict_slashes=False)
 def display_states():
     """display a html page with States list sorted
     in alphabetical order"""
-    states = sorted(list(storage.all("State").values()),
-                    key=lambda x: x.name)
+    states = sorted(list(storage.all("State").values()), key=lambda x: x.name)
     return render_template('7-states_list.html', states=states)
 
 
@@ -23,6 +23,6 @@ def teardown_db(exception):
     storage.close()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     """main function"""
     app.run(host='0.0.0.0', port=5000)
