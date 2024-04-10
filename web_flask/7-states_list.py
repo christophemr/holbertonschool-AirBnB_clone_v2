@@ -18,7 +18,7 @@ def display_states():
 
 
 @ app.teardown_appcontext
-def teardown_db(exeption):
+def teardown_db(exception):
     """closes storage on teardown"""
     storage.close()
 
