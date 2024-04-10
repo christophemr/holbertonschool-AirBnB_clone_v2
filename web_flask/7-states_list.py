@@ -18,8 +18,8 @@ def display_states():
 
 
 @ app.teardown_appcontext
-def teardown(self):
-    """Method to remove current SQLAlchemy Session"""
+def teardown_db(exeption):
+    """closes storage on teardown"""
     storage.close()
 
 
